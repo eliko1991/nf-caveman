@@ -33,7 +33,7 @@ process CAVEMAN_FLAG {
         -umv ${unmatched_vcf} \\
         -s ${params.species} \\
         -t ${study_type} \\
-        -ref ${reference_fa} \\
+        -ref ${reference_fai} \\
         ${flag_config_arg} \\
         ${flag_to_vcf_arg} \\
         ${annot_arg}
