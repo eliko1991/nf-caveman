@@ -1,6 +1,6 @@
 process CAVEMAN_MSTEP {
     tag "mstep_${index}"
-    label 'process_medium'
+    label 'process_single'
 
     //container 'papaemmelab/docker-cgp:v1.1'
     container '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif'
