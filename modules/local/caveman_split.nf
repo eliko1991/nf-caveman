@@ -7,7 +7,7 @@ process CAVEMAN_SPLIT {
 
     input:
     path(workdir)
-    path(reference_fai)
+    tuple path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fai)
 
     output:
     path(workdir), emit: workdir
@@ -25,6 +25,8 @@ process CAVEMAN_SPLIT {
                 -threads ${task.cpus} \\
                 -logs ${workdir}/clogs \\
                 -outdir ${workdir} \\
+                -tumour-bam ${tumour_bam} \\
+                -normal-bam ${normal_bam} \\
                 -reference ${reference_fai}
         fi
     done

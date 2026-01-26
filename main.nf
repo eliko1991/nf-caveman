@@ -92,9 +92,13 @@ workflow CAVEMAN {
     //
     // STEP 2: Split genome into chunks (parallel by reference contig)
     //
+    // Combine BAMs with reference fai for split process
+    ch_split_inputs = ch_bams
+        .combine(ch_reference.map { fa, fai -> fai })
+
     CAVEMAN_SPLIT(
         CAVEMAN_SETUP.out.workdir,
-        ch_reference.map { fa, fai -> fai }
+        ch_split_inputs
     )
 
     //
