@@ -1,0 +1,276 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/papaemmelab/nf-caveman/master/nextflow_schema.json",
+    "title": "nf-caveman pipeline parameters",
+    "description": "Nextflow pipeline for CaVEMan somatic SNV calling",
+    "type": "object",
+    "definitions": {
+        "input_output_options": {
+            "title": "Input/output options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define where the pipeline should find input data and save output data.",
+            "required": ["tumour_bam", "normal_bam", "reference", "outdir"],
+            "properties": {
+                "tumour_bam": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "application/octet-stream",
+                    "description": "Path to tumour BAM file (must have .bai index)",
+                    "fa_icon": "fas fa-file"
+                },
+                "normal_bam": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "mimetype": "application/octet-stream",
+                    "description": "Path to normal BAM file (must have .bai index)",
+                    "fa_icon": "fas fa-file"
+                },
+                "reference": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "description": "Path to reference FASTA index (.fai) file",
+                    "fa_icon": "fas fa-file"
+                },
+                "outdir": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "The output directory where the results will be saved.",
+                    "default": "./results",
+                    "fa_icon": "fas fa-folder-open"
+                }
+            }
+        },
+        "copy_number_options": {
+            "title": "Copy number options",
+            "type": "object",
+            "fa_icon": "fas fa-dna",
+            "description": "Copy number input files and defaults",
+            "properties": {
+                "normal_cn": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to normal copy number file",
+                    "fa_icon": "fas fa-file"
+                },
+                "tumour_cn": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to tumour copy number file",
+                    "fa_icon": "fas fa-file"
+                },
+                "norm_cn_default": {
+                    "type": "integer",
+                    "description": "Default normal copy number",
+                    "fa_icon": "fas fa-hashtag"
+                },
+                "tum_cn_default": {
+                    "type": "integer",
+                    "description": "Default tumour copy number",
+                    "fa_icon": "fas fa-hashtag"
+                }
+            }
+        },
+        "species_options": {
+            "title": "Species and assembly options",
+            "type": "object",
+            "fa_icon": "fas fa-dna",
+            "description": "Species and genome assembly settings",
+            "properties": {
+                "species": {
+                    "type": "string",
+                    "default": "Human",
+                    "description": "Species name",
+                    "fa_icon": "fas fa-user"
+                },
+                "species_assembly": {
+                    "type": "string",
+                    "default": "GRCh37",
+                    "description": "Genome assembly version",
+                    "fa_icon": "fas fa-dna"
+                },
+                "seqType": {
+                    "type": "string",
+                    "default": "genomic",
+                    "enum": ["genomic", "pulldown"],
+                    "description": "Sequencing type: 'genomic' (WGS) or 'pulldown' (exome/targeted)",
+                    "fa_icon": "fas fa-vial"
+                },
+                "normal_protocol": {
+                    "type": "string",
+                    "default": "WGS",
+                    "description": "Normal sample sequencing protocol",
+                    "fa_icon": "fas fa-clipboard-list"
+                },
+                "tumour_protocol": {
+                    "type": "string",
+                    "default": "WGS",
+                    "description": "Tumour sample sequencing protocol",
+                    "fa_icon": "fas fa-clipboard-list"
+                }
+            }
+        },
+        "flagging_options": {
+            "title": "Flagging and annotation options",
+            "type": "object",
+            "fa_icon": "fas fa-flag",
+            "description": "Files for variant flagging and annotation",
+            "properties": {
+                "annot_bed_files": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Path to annotation BED files directory",
+                    "fa_icon": "fas fa-folder"
+                },
+                "flag_bed_files": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Path to flagging BED files directory",
+                    "fa_icon": "fas fa-folder"
+                },
+                "germline_indel": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to germline indel BED file",
+                    "fa_icon": "fas fa-file"
+                },
+                "ignore_file": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to ignore regions file",
+                    "fa_icon": "fas fa-file"
+                },
+                "unmatched_vcf": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "Path to unmatched normal VCF directory",
+                    "fa_icon": "fas fa-folder"
+                },
+                "flagConfig": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to flagging config file",
+                    "fa_icon": "fas fa-cog"
+                },
+                "flagToVcfConfig": {
+                    "type": "string",
+                    "format": "file-path",
+                    "description": "Path to flag-to-VCF config file",
+                    "fa_icon": "fas fa-cog"
+                },
+                "normal_contamination": {
+                    "type": "number",
+                    "description": "Normal sample contamination fraction",
+                    "fa_icon": "fas fa-percentage"
+                }
+            }
+        },
+        "resource_options": {
+            "title": "Resource options",
+            "type": "object",
+            "fa_icon": "fas fa-microchip",
+            "description": "Resource allocation settings",
+            "properties": {
+                "max_memory_usage": {
+                    "type": "string",
+                    "default": "5.GB",
+                    "description": "Maximum memory per job",
+                    "fa_icon": "fas fa-memory"
+                },
+                "bin_size": {
+                    "type": "integer",
+                    "default": 10000,
+                    "description": "Number of variants per chunk for parallel flagging",
+                    "fa_icon": "fas fa-layer-group"
+                },
+                "tgd": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use reduced resources for targeted data",
+                    "fa_icon": "fas fa-compress-arrows-alt"
+                }
+            }
+        },
+        "max_job_request_options": {
+            "title": "Max job request options",
+            "type": "object",
+            "fa_icon": "fab fa-acquisitions-incorporated",
+            "description": "Set the top limit for requested resources for any single job.",
+            "properties": {
+                "max_cpus": {
+                    "type": "integer",
+                    "default": 16,
+                    "description": "Maximum number of CPUs that can be requested for any single job.",
+                    "fa_icon": "fas fa-microchip"
+                },
+                "max_memory": {
+                    "type": "string",
+                    "default": "128.GB",
+                    "description": "Maximum amount of memory that can be requested for any single job.",
+                    "fa_icon": "fas fa-memory"
+                },
+                "max_time": {
+                    "type": "string",
+                    "default": "240.h",
+                    "description": "Maximum amount of time that can be requested for any single job.",
+                    "fa_icon": "far fa-clock"
+                }
+            }
+        },
+        "generic_options": {
+            "title": "Generic options",
+            "type": "object",
+            "fa_icon": "fas fa-file-import",
+            "description": "Less common options for the pipeline, typically set in a config file.",
+            "properties": {
+                "help": {
+                    "type": "boolean",
+                    "description": "Display help text.",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "version": {
+                    "type": "boolean",
+                    "description": "Display version and exit.",
+                    "fa_icon": "fas fa-question-circle"
+                },
+                "publish_dir_mode": {
+                    "type": "string",
+                    "default": "copy",
+                    "description": "Method used to save pipeline results to output directory.",
+                    "fa_icon": "fas fa-copy",
+                    "enum": ["symlink", "rellink", "link", "copy", "copyNoFollow", "move"]
+                },
+                "monochrome_logs": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Do not use coloured log outputs.",
+                    "fa_icon": "fas fa-palette"
+                },
+                "validate_params": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Boolean whether to validate parameters against the schema at runtime.",
+                    "fa_icon": "fas fa-check-square"
+                },
+                "tracedir": {
+                    "type": "string",
+                    "default": "${params.outdir}/pipeline_info",
+                    "description": "Directory to keep pipeline Nextflow logs and reports.",
+                    "fa_icon": "fas fa-cogs"
+                }
+            }
+        }
+    },
+    "allOf": [
+        { "$ref": "#/definitions/input_output_options" },
+        { "$ref": "#/definitions/copy_number_options" },
+        { "$ref": "#/definitions/species_options" },
+        { "$ref": "#/definitions/flagging_options" },
+        { "$ref": "#/definitions/resource_options" },
+        { "$ref": "#/definitions/max_job_request_options" },
+        { "$ref": "#/definitions/generic_options" }
+    ]
+}
