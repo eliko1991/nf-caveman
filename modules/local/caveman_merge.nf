@@ -12,9 +12,6 @@ process CAVEMAN_MERGE {
     path(workdir), emit: workdir
 
     script:
-    def normal_cn_arg     = normal_cn.name     != 'NO_FILE' ? "-normal-cn ${normal_cn}"         : ""
-    def tumour_cn_arg     = tumour_cn.name     != 'NO_FILE' ? "-tumour-cn ${tumour_cn}"         : ""
-    def ignore_arg        = ignore_file.name   != 'NO_FILE' ? "-ignore-file ${ignore_file}"     : ""
     def norm_cn_def       = params.norm_cn_default ? "-norm-cn-default ${params.norm_cn_default}" : ""
     def tum_cn_def        = params.tum_cn_default  ? "-tum-cn-default ${params.tum_cn_default}"   : ""
     def species_arg       = params.species         ? "-species ${params.species}"                 : ""
@@ -24,18 +21,43 @@ process CAVEMAN_MERGE {
     def tumour_prot       = params.tumour_protocol ? "-tumour-protocol ${params.tumour_protocol}" : ""
     def contam_arg        = params.normal_contamination ? "-normal-contamination ${params.normal_contamination}" : ""
     """
+    # Get absolute paths before changing directory
+    TUMOUR_BAM_ABS=\$(readlink -f ${tumour_bam})
+    NORMAL_BAM_ABS=\$(readlink -f ${normal_bam})
+    REF_FAI_ABS=\$(readlink -f ${reference_fai})
+
+    # Handle optional files
+    NORMAL_CN_ARG=""
+    if [ -f "${normal_cn}" ] && [ "${normal_cn}" != "NO_FILE" ]; then
+        NORMAL_CN_ARG="-normal-cn \$(readlink -f ${normal_cn})"
+    fi
+
+    TUMOUR_CN_ARG=""
+    if [ -f "${tumour_cn}" ] && [ "${tumour_cn}" != "NO_FILE" ]; then
+        TUMOUR_CN_ARG="-tumour-cn \$(readlink -f ${tumour_cn})"
+    fi
+
+    IGNORE_ARG=""
+    if [ -f "${ignore_file}" ] && [ "${ignore_file}" != "NO_FILE" ]; then
+        IGNORE_ARG="-ignore-file \$(readlink -f ${ignore_file})"
+    fi
+
+    # CaVEMan requires running from the same directory where setup was performed
+    SETUP_DIR=\$(dirname \$(readlink -f ${workdir}))
+    cd \$SETUP_DIR
+
     caveman.pl \\
         -process merge \\
         -index 1 \\
         -threads ${task.cpus} \\
-        -logs ${workdir}/clogs \\
-        -outdir ${workdir} \\
-        -tumour-bam ${tumour_bam} \\
-        -normal-bam ${normal_bam} \\
-        -reference ${reference_fai} \\
-        ${normal_cn_arg} \\
-        ${tumour_cn_arg} \\
-        ${ignore_arg} \\
+        -logs workdir/clogs \\
+        -outdir workdir \\
+        -tumour-bam \$TUMOUR_BAM_ABS \\
+        -normal-bam \$NORMAL_BAM_ABS \\
+        -reference \$REF_FAI_ABS \\
+        \$NORMAL_CN_ARG \\
+        \$TUMOUR_CN_ARG \\
+        \$IGNORE_ARG \\
         ${norm_cn_def} \\
         ${tum_cn_def} \\
         ${species_arg} \\
