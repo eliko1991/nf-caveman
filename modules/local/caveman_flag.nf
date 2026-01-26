@@ -18,7 +18,7 @@ process CAVEMAN_FLAG {
     def study_type = params.seqType == 'pulldown' ? 'pulldown' : 'genomic'
     def flag_config_arg = flag_config ? "-c ${flag_config}" : ""
     def flag_to_vcf_arg = flag_to_vcf_config ? "-v ${flag_to_vcf_config}" : ""
-    def annot_arg = annot_bed_files ? "-ab ${annot_bed_files}" : ""
+    def annot_arg = annot_bed_files.name != 'NO_FILE' ? "-ab ${annot_bed_files}" : ""
     """
     # Get output name from input VCF
     OUT_NAME=\$(basename ${muts_vcf} .muts.ids.vcf.gz).flagged.muts.vcf
