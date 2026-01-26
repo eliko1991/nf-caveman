@@ -2,7 +2,8 @@ process CAVEMAN_ESTEP {
     tag "estep_${index}"
     label 'process_medium'
 
-    container 'papaemmelab/docker-cgp:v1.1'
+    //container 'papaemmelab/docker-cgp:v1.1'
+    container '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif'
 
     input:
     tuple path(workdir), val(index)
