@@ -2,7 +2,7 @@ process CAVEMAN_SETUP {
     tag "setup"
     label 'process_low'
 
-    #container 'papaemmelab/docker-cgp:v1.1'
+    //container 'papaemmelab/docker-cgp:v1.1'
     container '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif'
 
     input:
