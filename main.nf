@@ -63,10 +63,10 @@ workflow CAVEMAN {
             tuple(fa, fai)
         }
 
-    // Optional inputs - use file('NO_FILE') as placeholder for empty optional inputs
-    ch_normal_cn  = params.normal_cn   ? Channel.fromPath(params.normal_cn, checkIfExists: true)   : Channel.value(file('NO_FILE'))
-    ch_tumour_cn  = params.tumour_cn   ? Channel.fromPath(params.tumour_cn, checkIfExists: true)   : Channel.value(file('NO_FILE'))
-    ch_ignore     = params.ignore_file ? Channel.fromPath(params.ignore_file, checkIfExists: true) : Channel.value(file('NO_FILE'))
+    // Optional inputs - use unique placeholders for empty optional inputs to avoid file name collisions
+    ch_normal_cn  = params.normal_cn   ? Channel.fromPath(params.normal_cn, checkIfExists: true)   : Channel.value(file('NO_FILE_NORMAL_CN'))
+    ch_tumour_cn  = params.tumour_cn   ? Channel.fromPath(params.tumour_cn, checkIfExists: true)   : Channel.value(file('NO_FILE_TUMOUR_CN'))
+    ch_ignore     = params.ignore_file ? Channel.fromPath(params.ignore_file, checkIfExists: true) : Channel.value(file('NO_FILE_IGNORE'))
     ch_annot_bed  = params.annot_bed_files ? Channel.fromPath(params.annot_bed_files, checkIfExists: true) : Channel.value(file('NO_FILE'))
     ch_flag_bed   = params.flag_bed_files ? Channel.fromPath(params.flag_bed_files, checkIfExists: true) : Channel.value([])
     ch_germline   = params.germline_indel ? Channel.fromPath(params.germline_indel, checkIfExists: true) : Channel.value([])
