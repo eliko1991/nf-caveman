@@ -2,9 +2,6 @@ process CAVEMAN_MERGE_RESULTS {
     tag "merge_results"
     label 'process_low'
 
-    //container 'papaemmelab/docker-cgp:v1.1'
-    container '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif'
-
     input:
     tuple path(workdir), path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fai), path(normal_cn), path(tumour_cn), path(ignore_file)
 

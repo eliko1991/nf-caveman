@@ -2,9 +2,6 @@ process CAVEMAN_ADD_IDS {
     tag "add_ids"
     label 'process_low'
 
-    //container 'papaemmelab/docker-cgp:v1.1'
-    container '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif'
-
     publishDir "${params.outdir}", mode: params.publish_dir_mode, pattern: "*.snps.ids.vcf.gz*"
 
     input:

@@ -3,9 +3,6 @@ process CAVEMAN_SPLIT {
     label 'process_low'
     label 'process_long'
 
-    //container 'papaemmelab/docker-cgp:v1.1'
-    container '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif'
-
     input:
     path(workdir)
     tuple path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fai), path(normal_cn), path(tumour_cn), path(ignore_file)
