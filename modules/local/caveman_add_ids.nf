@@ -1,6 +1,7 @@
 process CAVEMAN_ADD_IDS {
     tag "add_ids"
     label 'process_low'
+    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
 
     publishDir "${params.outdir}", mode: params.publish_dir_mode, pattern: "*.snps.ids.vcf.gz*"
 

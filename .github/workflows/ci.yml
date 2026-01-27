@@ -1,0 +1,83 @@
+name: nf-caveman CI
+
+on:
+  push:
+    branches: [main, gcpslurm, develop]
+  pull_request:
+    branches: [main, gcpslurm, develop]
+
+jobs:
+  lint:
+    name: Lint workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v4
+
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v1
+        with:
+          version: "23.10.0"
+
+      - name: Run nf-core linting
+        run: |
+          # Install nf-core tools
+          pip install nf-core
+          # Run basic nextflow config check
+          nextflow config -profile test,docker
+
+  test:
+    name: Run pipeline with test data
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        profile: ["test"]
+    steps:
+      - name: Check out pipeline code
+        uses: actions/checkout@v4
+
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v1
+        with:
+          version: "23.10.0"
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run pipeline with test data
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} \
+            -profile ${{ matrix.profile }},docker \
+            --outdir ./results \
+            -work-dir ./work \
+            -resume
+
+      - name: Check outputs
+        run: |
+          # Check that key output files exist
+          if [ ! -d "results" ]; then
+            echo "Error: Results directory not found"
+            exit 1
+          fi
+
+          # List output files for debugging
+          echo "Output files:"
+          find results -type f
+
+          # Check for VCF outputs (exact names may vary)
+          vcf_count=$(find results -name "*.vcf.gz" -o -name "*.vcf" | wc -l)
+          if [ "$vcf_count" -eq 0 ]; then
+            echo "Warning: No VCF files found in output"
+          else
+            echo "Found $vcf_count VCF file(s)"
+          fi
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.profile }}
+          path: |
+            results/
+            .nextflow.log
+

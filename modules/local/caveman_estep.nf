@@ -1,6 +1,7 @@
 process CAVEMAN_ESTEP {
     tag "estep_${index}"
     label 'process_single'
+    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
 
     input:
     tuple path(workdir), val(index), path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fai), path(normal_cn), path(tumour_cn), path(ignore_file)

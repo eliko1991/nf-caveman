@@ -1,7 +1,9 @@
 process CAVEMAN_SPLIT {
     tag "split"
     label 'process_low'
+    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
     label 'process_long'
+    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
 
     input:
     path(workdir)
