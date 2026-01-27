@@ -2,8 +2,6 @@ process REMOVE_CONTIGS {
     tag "remove_contigs"
     label 'process_single'
 
-    container 'papaemmelab/docker-cgp:v1.1'
-
     input:
     path(workdir)
 

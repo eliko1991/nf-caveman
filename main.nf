@@ -63,11 +63,11 @@ workflow CAVEMAN {
             tuple(fa, fai)
         }
 
-    // Optional inputs
-    ch_normal_cn  = params.normal_cn  ? Channel.fromPath(params.normal_cn, checkIfExists: true)  : Channel.value([])
-    ch_tumour_cn  = params.tumour_cn  ? Channel.fromPath(params.tumour_cn, checkIfExists: true)  : Channel.value([])
-    ch_ignore     = params.ignore_file ? Channel.fromPath(params.ignore_file, checkIfExists: true) : Channel.value([])
-    ch_annot_bed  = params.annot_bed_files ? Channel.fromPath(params.annot_bed_files, checkIfExists: true) : Channel.value([])
+    // Optional inputs - use file('NO_FILE') as placeholder for empty optional inputs
+    ch_normal_cn  = params.normal_cn   ? Channel.fromPath(params.normal_cn, checkIfExists: true)   : Channel.value(file('NO_FILE'))
+    ch_tumour_cn  = params.tumour_cn   ? Channel.fromPath(params.tumour_cn, checkIfExists: true)   : Channel.value(file('NO_FILE'))
+    ch_ignore     = params.ignore_file ? Channel.fromPath(params.ignore_file, checkIfExists: true) : Channel.value(file('NO_FILE'))
+    ch_annot_bed  = params.annot_bed_files ? Channel.fromPath(params.annot_bed_files, checkIfExists: true) : Channel.value(file('NO_FILE'))
     ch_flag_bed   = params.flag_bed_files ? Channel.fromPath(params.flag_bed_files, checkIfExists: true) : Channel.value([])
     ch_germline   = params.germline_indel ? Channel.fromPath(params.germline_indel, checkIfExists: true) : Channel.value([])
     ch_unmatched  = params.unmatched_vcf ? Channel.fromPath(params.unmatched_vcf, checkIfExists: true) : Channel.value([])
@@ -78,8 +78,17 @@ workflow CAVEMAN {
     ch_bams = ch_tumour_bam.combine(ch_normal_bam)
 
     // Combine all inputs for caveman processes
+    // Format: tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fa, reference_fai, normal_cn, tumour_cn, ignore_file
     ch_inputs = ch_bams
         .combine(ch_reference)
+        .combine(ch_normal_cn)
+        .combine(ch_tumour_cn)
+        .combine(ch_ignore)
+
+    // Create a channel with just the files needed for all steps (without reference_fa)
+    // Format: tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file
+    ch_common_inputs = ch_bams
+        .combine(ch_reference.map { fa, fai -> fai })
         .combine(ch_normal_cn)
         .combine(ch_tumour_cn)
         .combine(ch_ignore)
@@ -94,7 +103,7 @@ workflow CAVEMAN {
     //
     CAVEMAN_SPLIT(
         CAVEMAN_SETUP.out.workdir,
-        ch_reference.map { fa, fai -> fai }
+        ch_common_inputs
     )
 
     //
@@ -105,17 +114,24 @@ workflow CAVEMAN {
     //
     // STEP 4: Concatenate split files
     //
-    CAVEMAN_SPLIT_CONCAT(REMOVE_CONTIGS.out.workdir)
+    // Combine workdir with common inputs
+    ch_split_concat_input = REMOVE_CONTIGS.out.workdir
+        .combine(ch_common_inputs)
+
+    CAVEMAN_SPLIT_CONCAT(ch_split_concat_input)
 
     //
     // STEP 5: M-step (parallel by split index)
     //
     // Get the number of splits and create index channel
     ch_mstep_indices = CAVEMAN_SPLIT_CONCAT.out.workdir
-        .map { workdir ->
+        .combine(ch_common_inputs)
+        .map { workdir, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file ->
             def splitList = file("${workdir}/tmpCaveman/splitList")
             def count = splitList.readLines().findAll { it.trim() }.size()
-            (1..count).collect { idx -> tuple(workdir, idx) }
+            (1..count).collect { idx -> 
+                tuple(workdir, idx, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file) 
+            }
         }
         .flatMap { it }
 
@@ -125,18 +141,26 @@ workflow CAVEMAN {
     // STEP 6: Merge M-step results
     //
     ch_mstep_done = CAVEMAN_MSTEP.out.done.collect()
-    ch_merge_input = CAVEMAN_SPLIT_CONCAT.out.workdir.combine(ch_mstep_done.map { 'done' })
+    ch_merge_input = CAVEMAN_SPLIT_CONCAT.out.workdir
+        .combine(ch_common_inputs)
+        .combine(ch_mstep_done.map { 'done' })
+        .map { workdir, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file, done ->
+            tuple(workdir, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file)
+        }
 
-    CAVEMAN_MERGE(ch_merge_input.map { it[0] })
+    CAVEMAN_MERGE(ch_merge_input)
 
     //
     // STEP 7: E-step (parallel by split index)
     //
     ch_estep_indices = CAVEMAN_MERGE.out.workdir
-        .map { workdir ->
+        .combine(ch_common_inputs)
+        .map { workdir, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file ->
             def splitList = file("${workdir}/tmpCaveman/splitList")
             def count = splitList.readLines().findAll { it.trim() }.size()
-            (1..count).collect { idx -> tuple(workdir, idx) }
+            (1..count).collect { idx -> 
+                tuple(workdir, idx, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file) 
+            }
         }
         .flatMap { it }
 
@@ -146,14 +170,22 @@ workflow CAVEMAN {
     // STEP 8: Merge E-step results
     //
     ch_estep_done = CAVEMAN_ESTEP.out.done.collect()
-    ch_results_input = CAVEMAN_MERGE.out.workdir.combine(ch_estep_done.map { 'done' })
+    ch_results_input = CAVEMAN_MERGE.out.workdir
+        .combine(ch_common_inputs)
+        .combine(ch_estep_done.map { 'done' })
+        .map { workdir, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file, done ->
+            tuple(workdir, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file)
+        }
 
-    CAVEMAN_MERGE_RESULTS(ch_results_input.map { it[0] })
+    CAVEMAN_MERGE_RESULTS(ch_results_input)
 
     //
     // STEP 9: Add IDs to VCF
     //
-    CAVEMAN_ADD_IDS(CAVEMAN_MERGE_RESULTS.out.workdir)
+    ch_add_ids_input = CAVEMAN_MERGE_RESULTS.out.workdir
+        .combine(ch_common_inputs)
+
+    CAVEMAN_ADD_IDS(ch_add_ids_input)
 
     //
     // STEP 10: Flag variants (optional)
