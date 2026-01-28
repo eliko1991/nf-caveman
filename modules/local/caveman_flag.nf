@@ -3,7 +3,7 @@ process CAVEMAN_FLAG {
     label 'process_medium'
     container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
     label 'process_long'
-    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
+
 
     publishDir "${params.outdir}", mode: params.publish_dir_mode
 
