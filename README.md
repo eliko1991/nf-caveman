@@ -1,4 +1,4 @@
-# nf-caveman
+# 🗿 nf-caveman
 
 [![CI](https://github.com/eliko1991/nf-caveman/actions/workflows/ci.yml/badge.svg)](https://github.com/eliko1991/nf-caveman/actions/workflows/ci.yml)
 
@@ -27,10 +27,16 @@ The pipeline wraps [cgpCaVEManWrapper](https://github.com/cancerit/cgpCaVEManWra
 
 1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=22.10.1`)
 
-2. Install [Docker](https://docs.docker.com/engine/installation/) or [Singularity](https://sylabs.io/guides/3.0/user-guide/)
+2. Install [Docker](https://docs.docker.com/engine/installation/) or [Singularity](https://sylabs.io/guides/3.0/user-guide/).
 
 3. Run the pipeline:
 
+Run the quick test pipeline (completes < 1min)
+```bash
+nextflow run main.nf -profile test,docker --outdir test_results
+```
+
+Run with your files:
 ```bash
 nextflow run nf-caveman \
     -profile docker \

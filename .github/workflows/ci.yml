@@ -1,10 +1,6 @@
 name: nf-caveman CI
 
-on:
-  push:
-    branches: [main, gcpslurm, develop]
-  pull_request:
-    branches: [main, gcpslurm, develop]
+on: [push, pull_request]
 
 jobs:
   lint:

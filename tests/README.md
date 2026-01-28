@@ -4,7 +4,7 @@ This directory contains test data and scripts for the nf-caveman pipeline.
 
 ## Test Data
 
-The test data in `tests/data/` is derived from the [toil_caveman](https://github.com/papaemmelab/toil_caveman) repository and includes:
+The test data located in `tests/data/` includes:
 
 - **tumor/** - Tumor BAM file and index
 - **normal/** - Normal BAM file and index
@@ -32,15 +32,9 @@ nextflow run main.nf -profile test,docker --outdir test_results
 
 Tests run automatically via GitHub Actions on push/PR to main, gcpslurm, or develop branches.
 
-## Test Profiles
+## Test Results
 
-- **test** - Minimal test with small dataset (suitable for CI)
-- **test_full** - Full test with larger dataset (optional, for comprehensive testing)
-
-## Comparing with toil_caveman
-
-The nf-caveman pipeline should produce equivalent results to toil_caveman when given the same inputs. Key outputs to compare:
-
+The nf-caveman pipeline produces minimal results:
 - VCF files with somatic variants
 - Flagged mutations
 - SNP calls
@@ -48,6 +42,6 @@ The nf-caveman pipeline should produce equivalent results to toil_caveman when g
 ## Adding New Tests
 
 1. Add test data to `tests/data/`
-2. Create a new config profile in `conf/`
+2. Create a new config profile in `conf/`, if needed.
 3. Update the CI workflow in `.github/workflows/ci.yml`
 4. Document expected outputs
