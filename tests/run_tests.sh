@@ -14,6 +14,9 @@ echo "========================================="
 echo "nf-caveman Test Suite"
 echo "========================================="
 
+# Start timing
+START_TIME=$SECONDS
+
 # Step 1: Run Nextflow pipeline
 echo -e "\n${YELLOW}Step 1: Running nf-caveman pipeline with test profile...${NC}"
 nextflow run ${GITHUB_WORKSPACE:-$PWD} \
@@ -61,8 +64,15 @@ fi
 
 python3 tests/validate_vcf.py "$expected_vcf" "$output_vcf"
 
+# Calculate elapsed time
+ELAPSED=$((SECONDS - START_TIME))
+HOURS=$((ELAPSED / 3600))
+MINUTES=$(((ELAPSED % 3600) / 60))
+SECS=$((ELAPSED % 60))
+
 # All tests passed
 echo -e "\n${GREEN}=========================================${NC}"
 echo -e "${GREEN}✓ All tests passed!${NC}"
+printf "${GREEN}Elapsed Time: %02d:%02d:%02d${NC}\n" $HOURS $MINUTES $SECS
 echo -e "${GREEN}=========================================${NC}"
 exit 0
