@@ -26,17 +26,17 @@ process CAVEMAN_MSTEP {
 
     # Handle optional files
     NORMAL_CN_ARG=""
-    if [ -f "${normal_cn}" ] && [ "${normal_cn}" != "NO_FILE" ]; then
+    if [ -f "${normal_cn}" ] && [[ ! "${normal_cn}" =~ ^NO_FILE ]]; then
         NORMAL_CN_ARG="-normal-cn \$(readlink -f ${normal_cn})"
     fi
 
     TUMOUR_CN_ARG=""
-    if [ -f "${tumour_cn}" ] && [ "${tumour_cn}" != "NO_FILE" ]; then
+    if [ -f "${tumour_cn}" ] && [[ ! "${tumour_cn}" =~ ^NO_FILE ]]; then
         TUMOUR_CN_ARG="-tumour-cn \$(readlink -f ${tumour_cn})"
     fi
 
     IGNORE_ARG=""
-    if [ -f "${ignore_file}" ] && [ "${ignore_file}" != "NO_FILE" ]; then
+    if [ -f "${ignore_file}" ] && [[ ! "${ignore_file}" =~ ^NO_FILE ]]; then
         IGNORE_ARG="-ignore-file \$(readlink -f ${ignore_file})"
     fi
 
