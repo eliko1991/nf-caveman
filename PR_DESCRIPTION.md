@@ -66,10 +66,16 @@ container workflow.containerEngine == 'singularity' ?
 
 ### 4. Test Infrastructure
 
-- **`tests/run_test.sh`**: Local test runner script
+- **`tests/run_tests.sh`**: Comprehensive test runner script
   - Runs the pipeline with test profile
-  - Validates output files
+  - Validates output files exist
+  - Validates VCF contents against expected results
   - Provides clear pass/fail feedback
+
+- **`tests/validate_vcf.py`**: VCF validation script
+  - Compares actual vs expected variant calls
+  - Checks chromosome, position, REF, and ALT alleles
+  - Reports missing or extra variants
 
 - **`tests/README.md`**: Documentation for tests
   - Explains test data structure
@@ -90,8 +96,8 @@ container workflow.containerEngine == 'singularity' ?
 ### Local Testing
 
 ```bash
-# Run with the test script
-./tests/run_test.sh
+# Run with the test script (recommended)
+./tests/run_tests.sh
 
 # Or manually with Nextflow
 nextflow run main.nf -profile test,docker --outdir test_results
@@ -108,11 +114,13 @@ GitHub Actions will automatically run tests on every push and pull request. Resu
 - `conf/test.config` - Updated with test data paths
 - All 10 module files in `modules/local/` - Fixed container specifications
 
-**Added** (35 files):
+**Added** (35+ files):
 - `.github/workflows/ci.yml` - CI workflow
 - `.gitignore` - Ignore patterns
-- `tests/run_test.sh` - Test runner
+- `tests/run_tests.sh` - Comprehensive test runner
+- `tests/validate_vcf.py` - VCF validation script
 - `tests/README.md` - Test documentation
+- `tests/data/expected_output/tumor_vs_normal.flagged.muts.vcf` - Expected output
 - 31 test data files in `tests/data/`
 
 ## Migration from toil_caveman

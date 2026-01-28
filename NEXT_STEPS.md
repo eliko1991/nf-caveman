@@ -76,8 +76,8 @@ Once the branch is pushed:
 Before pushing, you can test locally:
 
 ```bash
-# Quick test with Docker
-./tests/run_test.sh
+# Quick test with Docker (recommended)
+./tests/run_tests.sh
 
 # Or manually
 nextflow run main.nf -profile test,docker --outdir test_results
@@ -91,7 +91,8 @@ ls -lh test_results/
 - **PR_DESCRIPTION.md** - Full PR description (use this for the PR body)
 - **.github/workflows/ci.yml** - GitHub Actions workflow
 - **tests/README.md** - Test documentation
-- **tests/run_test.sh** - Test runner script
+- **tests/run_tests.sh** - Comprehensive test runner script
+- **tests/validate_vcf.py** - VCF validation script
 - All modules in **modules/local/** - Container specs updated
 
 ## Summary of Changes

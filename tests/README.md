@@ -19,8 +19,13 @@ This is a minimal test dataset suitable for CI testing.
 ### Using the test script
 
 ```bash
-./tests/run_test.sh
+./tests/run_tests.sh
 ```
+
+This comprehensive test script will:
+1. Run the nf-caveman pipeline with test data
+2. Check that output files are generated
+3. Validate VCF contents against expected results
 
 ### Manually with Nextflow
 

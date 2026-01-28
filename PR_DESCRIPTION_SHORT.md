@@ -24,7 +24,8 @@ container workflow.containerEngine == 'singularity' ?
 ```
 
 ### Test Infrastructure
-- `tests/run_test.sh` - Local test runner
+- `tests/run_tests.sh` - Comprehensive test runner (pipeline + validation)
+- `tests/validate_vcf.py` - VCF content validation script
 - `tests/README.md` - Documentation
 - Updated `conf/test.config` with test data paths
 - Added `.gitignore` and CI badge
@@ -33,7 +34,7 @@ container workflow.containerEngine == 'singularity' ?
 
 ```bash
 # Run tests locally
-./tests/run_test.sh
+./tests/run_tests.sh
 
 # Or with Nextflow
 nextflow run main.nf -profile test,docker --outdir test_results
