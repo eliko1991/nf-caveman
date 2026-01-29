@@ -1,6 +1,6 @@
 process CAVEMAN_ESTEP {
     tag "estep_${index}"
-    label 'process_single'
+    label 'process_low'
 
     input:
     tuple path(workdir), val(index), path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fai), path(normal_cn), path(tumour_cn), path(ignore_file)
