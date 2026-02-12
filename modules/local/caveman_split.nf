@@ -1,6 +1,7 @@
 process CAVEMAN_SPLIT {
     tag "split"
     label 'process_low'
+    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
     label 'process_long'
 
     input:
@@ -27,17 +28,17 @@ process CAVEMAN_SPLIT {
 
     # Handle optional files
     NORMAL_CN_ARG=""
-    if [ -f "${normal_cn}" ] && [ "${normal_cn}" != "NO_FILE" ]; then
+    if [ -f "${normal_cn}" ] && [[ ! "${normal_cn}" =~ ^NO_FILE ]]; then
         NORMAL_CN_ARG="-normal-cn \$(readlink -f ${normal_cn})"
     fi
 
     TUMOUR_CN_ARG=""
-    if [ -f "${tumour_cn}" ] && [ "${tumour_cn}" != "NO_FILE" ]; then
+    if [ -f "${tumour_cn}" ] && [[ ! "${tumour_cn}" =~ ^NO_FILE ]]; then
         TUMOUR_CN_ARG="-tumour-cn \$(readlink -f ${tumour_cn})"
     fi
 
     IGNORE_ARG=""
-    if [ -f "${ignore_file}" ] && [ "${ignore_file}" != "NO_FILE" ]; then
+    if [ -f "${ignore_file}" ] && [[ ! "${ignore_file}" =~ ^NO_FILE ]]; then
         IGNORE_ARG="-ignore-file \$(readlink -f ${ignore_file})"
     fi
 

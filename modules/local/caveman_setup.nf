@@ -1,6 +1,7 @@
 process CAVEMAN_SETUP {
     tag "setup"
     label 'process_low'
+    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
 
     input:
     tuple path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fa), path(reference_fai), path(normal_cn), path(tumour_cn), path(ignore_file)
@@ -9,9 +10,9 @@ process CAVEMAN_SETUP {
     path("workdir"), emit: workdir
 
     script:
-    def normal_cn_arg     = normal_cn     ? "-normal-cn ${normal_cn}"         : ""
-    def tumour_cn_arg     = tumour_cn     ? "-tumour-cn ${tumour_cn}"         : ""
-    def ignore_arg        = ignore_file   ? "-ignore-file ${ignore_file}"     : ""
+    def normal_cn_arg     = (normal_cn && !normal_cn.name.startsWith('NO_FILE'))     ? "-normal-cn ${normal_cn}"         : ""
+    def tumour_cn_arg     = (tumour_cn && !tumour_cn.name.startsWith('NO_FILE'))     ? "-tumour-cn ${tumour_cn}"         : ""
+    def ignore_arg        = (ignore_file && !ignore_file.name.startsWith('NO_FILE')) ? "-ignore-file ${ignore_file}"     : ""
     def norm_cn_def       = params.norm_cn_default ? "-norm-cn-default ${params.norm_cn_default}" : ""
     def tum_cn_def        = params.tum_cn_default  ? "-tum-cn-default ${params.tum_cn_default}"   : ""
     def species_arg       = params.species         ? "-species ${params.species}"                 : ""

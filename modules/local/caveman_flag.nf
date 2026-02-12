@@ -1,7 +1,9 @@
 process CAVEMAN_FLAG {
     tag "flag"
     label 'process_medium'
+    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
     label 'process_long'
+
 
     publishDir "${params.outdir}", mode: params.publish_dir_mode
 
@@ -14,9 +16,9 @@ process CAVEMAN_FLAG {
 
     script:
     def study_type = params.seqType == 'pulldown' ? 'pulldown' : 'genomic'
-    def flag_config_arg = flag_config ? "-c ${flag_config}" : ""
-    def flag_to_vcf_arg = flag_to_vcf_config ? "-v ${flag_to_vcf_config}" : ""
-    def annot_arg = annot_bed_files.name != 'NO_FILE' ? "-ab ${annot_bed_files}" : ""
+    def flag_config_arg = (flag_config && !flag_config.name.startsWith('NO_FILE')) ? "-c ${flag_config}" : ""
+    def flag_to_vcf_arg = (flag_to_vcf_config && !flag_to_vcf_config.name.startsWith('NO_FILE')) ? "-v ${flag_to_vcf_config}" : ""
+    def annot_arg = (annot_bed_files && !annot_bed_files.name.startsWith('NO_FILE')) ? "-ab ${annot_bed_files}" : ""
     """
     # Get output name from input VCF
     OUT_NAME=\$(basename ${muts_vcf} .muts.ids.vcf.gz).flagged.muts.vcf

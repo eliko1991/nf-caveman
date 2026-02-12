@@ -1,6 +1,8 @@
-# nf-caveman
+# 🗿 nf-caveman
 
-A Nextflow pipeline for running CaVEMan somatic SNV calling.
+[![CI](https://github.com/eliko1991/nf-caveman/actions/workflows/ci.yml/badge.svg)](https://github.com/eliko1991/nf-caveman/actions/workflows/ci.yml)
+
+A Nextflow pipeline for running the [CaVEMan](https://cancerit.github.io/CaVEMan/) algorithm for somatic SNV calling.
 
 ## Introduction
 
@@ -25,44 +27,49 @@ The pipeline wraps [cgpCaVEManWrapper](https://github.com/cancerit/cgpCaVEManWra
 
 1. Install [Nextflow](https://www.nextflow.io/docs/latest/getstarted.html#installation) (`>=22.10.1`)
 
-2. Install [Docker](https://docs.docker.com/engine/installation/) or [Singularity](https://sylabs.io/guides/3.0/user-guide/)
+2. Install [Docker](https://docs.docker.com/engine/installation/) or [Singularity](https://sylabs.io/guides/3.0/user-guide/).
 
 3. Run the pipeline:
 
-```bash
-# export variables based off your env
-export PATH=$JAVA_HOME/bin:$PATH
-export PATH=/path/to/nextflow_env/bin/:$PATH
-export SINGULARITY_BIND=/path1:/path1,/path2:/path2
+    Run the quick test pipeline (completes < 1min)
+    ```bash
+    nextflow run eliko1991/nf-caveman -profile test,docker --outdir test_results
+    ```
 
-# update parameters below with paths to your file
-nextflow run eliko1991/nf-caveman -r main \
-    -profile singularity \
-    -work-dir /path/to/outdir/work \
-    -with-report report.html \
-    -with-trace \
-    -resume \
-    --flag_bed_files /GRCh37/homo_sapiens/GRCh37d5/caveman/flagging \
-    --ignore_file /GRCh37/homo_sapiens/GRCh37d5/caveman/genome.gap.with_repeats.tab \
-    --tum_cn_default 5 \
-    --norm_cn_default 2 \
-    --reference /GRCh37/homo_sapiens/GRCh37d5/genome/gr37.fasta.fai \
-    --unmatched_vcf /GRCh37/homo_sapiens/GRCh37d5/caveman/unmatched_normal_panel_bwamem_mapped_with_xten \
-    --germline_indel /path/to/germline.bed \
-    --tumour_cn /dummy_cn_profile.txt \
-    --normal_cn /dummy_cn_profile2.txt \
-    --normal_contamination 0.09999999999999998 \
-    --species Human \
-    --normal_bam /path/to/normal.bam \
-    --tumour_bam /path/to/tumor.bam  \
-    --normal_protocol WGS \
-    --tumour_protocol WGS \
-    --species_assembly GRCh37d5 \
-    --outdir /path/to/outdir \
-    --seqType genomic \
-    --flagConfig /homo_sapiens/GRCh37d5/caveman/flagging/flag.vcf.config.ini \
-    --flagToVcfConfig /homo_sapiens/GRCh37d5/caveman/flagging/flag.to.vcf.convert.ini
-```
+    With you own configuration:
+    ```bash
+    export PATH=$JAVA_HOME/bin:$PATH
+    export PATH=/path/to/nextflow_env/bin/:$PATH
+    export SINGULARITY_BIND=/path1:/path1,/path2:/path2
+
+    # update parameters below with paths to your file
+    nextflow run eliko1991/nf-caveman -r main \
+        -profile singularity \
+        -work-dir /path/to/outdir/work \
+        -with-report report.html \
+        -with-trace \
+        -resume \
+        --flag_bed_files /GRCh37/homo_sapiens/GRCh37d5/caveman/flagging \
+        --ignore_file /GRCh37/homo_sapiens/GRCh37d5/caveman/genome.gap.with_repeats.tab \
+        --tum_cn_default 5 \
+        --norm_cn_default 2 \
+        --reference /GRCh37/homo_sapiens/GRCh37d5/genome/gr37.fasta.fai \
+        --unmatched_vcf /GRCh37/homo_sapiens/GRCh37d5/caveman/unmatched_normal_panel_bwamem_mapped_with_xten \
+        --germline_indel /path/to/germline.bed \
+        --tumour_cn /dummy_cn_profile.txt \
+        --normal_cn /dummy_cn_profile2.txt \
+        --normal_contamination 0.09998 \
+        --species Human \
+        --normal_bam /path/to/normal.bam \
+        --tumour_bam /path/to/tumor.bam  \
+        --normal_protocol WGS \
+        --tumour_protocol WGS \
+        --species_assembly GRCh37d5 \
+        --outdir /path/to/outdir \
+        --seqType genomic \
+        --flagConfig /homo_sapiens/GRCh37d5/caveman/flagging/flag.vcf.config.ini \
+        --flagToVcfConfig /homo_sapiens/GRCh37d5/caveman/flagging/flag.to.vcf.convert.ini
+    ```
 
 ## Parameters
 

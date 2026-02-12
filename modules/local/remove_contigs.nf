@@ -1,6 +1,7 @@
 process REMOVE_CONTIGS {
     tag "remove_contigs"
     label 'process_single'
+    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman/papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
 
     input:
     path(workdir)

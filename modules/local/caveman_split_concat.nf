@@ -1,6 +1,7 @@
 process CAVEMAN_SPLIT_CONCAT {
     tag "split_concat"
     label 'process_low'
+    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
 
     input:
     tuple path(workdir), path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fai), path(normal_cn), path(tumour_cn), path(ignore_file)
@@ -25,17 +26,17 @@ process CAVEMAN_SPLIT_CONCAT {
 
     # Handle optional files
     NORMAL_CN_ARG=""
-    if [ -f "${normal_cn}" ] && [ "${normal_cn}" != "NO_FILE" ]; then
+    if [ -f "${normal_cn}" ] && [[ ! "${normal_cn}" =~ ^NO_FILE ]]; then
         NORMAL_CN_ARG="-normal-cn \$(readlink -f ${normal_cn})"
     fi
 
     TUMOUR_CN_ARG=""
-    if [ -f "${tumour_cn}" ] && [ "${tumour_cn}" != "NO_FILE" ]; then
+    if [ -f "${tumour_cn}" ] && [[ ! "${tumour_cn}" =~ ^NO_FILE ]]; then
         TUMOUR_CN_ARG="-tumour-cn \$(readlink -f ${tumour_cn})"
     fi
 
     IGNORE_ARG=""
-    if [ -f "${ignore_file}" ] && [ "${ignore_file}" != "NO_FILE" ]; then
+    if [ -f "${ignore_file}" ] && [[ ! "${ignore_file}" =~ ^NO_FILE ]]; then
         IGNORE_ARG="-ignore-file \$(readlink -f ${ignore_file})"
     fi
 

@@ -1,0 +1,51 @@
+##fileformat=VCFv4.1
+##fileDate=20191111
+##reference=/mnt/tests/data/reference/reference.fasta
+##vcfProcessLog=<InputVCF=<.>,InputVCFSource=<CaVEMan>,InputVCFParam=<SNP_CUTOFF=0.95,PRIOR_MUT_RATE=6e-06,PRIOR_SNP_RATE=0.0001,NORMAL_CONTAMINATION=0.1,MUT_CUTOFF=0.8,REF_BIAS=0.95>>
+##cavemanVersion=1.7.2
+##contig=<ID=2,assembly=GRCh37d5,length=124001,species=Human>
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+##INFO=<ID=MP,Number=1,Type=Float,Description="Sum of CaVEMan somatic genotype probabilities">
+##INFO=<ID=GP,Number=1,Type=Float,Description="Sum of CaVEMan germline genotype probabilities">
+##INFO=<ID=TG,Number=1,Type=String,Description="Most probable genotype as called by CaVEMan">
+##INFO=<ID=TP,Number=1,Type=Float,Description="Probability of most probable genotype as called by CaVEMan">
+##INFO=<ID=SG,Number=1,Type=String,Description="2nd most probable genotype as called by CaVEMan">
+##INFO=<ID=SP,Number=1,Type=Float,Description="Probability of 2nd most probable genotype as called by CaVEMan">
+##INFO=<ID=DS,Number=.,Type=String,Description="DBSnp ID of known SNP">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=FAZ,Number=1,Type=Integer,Description="Reads presenting a A for this position, forward strand">
+##FORMAT=<ID=FCZ,Number=1,Type=Integer,Description="Reads presenting a C for this position, forward strand">
+##FORMAT=<ID=FGZ,Number=1,Type=Integer,Description="Reads presenting a G for this position, forward strand">
+##FORMAT=<ID=FTZ,Number=1,Type=Integer,Description="Reads presenting a T for this position, forward strand">
+##FORMAT=<ID=RAZ,Number=1,Type=Integer,Description="Reads presenting a A for this position, reverse strand">
+##FORMAT=<ID=RCZ,Number=1,Type=Integer,Description="Reads presenting a C for this position, reverse strand">
+##FORMAT=<ID=RGZ,Number=1,Type=Integer,Description="Reads presenting a G for this position, reverse strand">
+##FORMAT=<ID=RTZ,Number=1,Type=Integer,Description="Reads presenting a T for this position, reverse strand">
+##FORMAT=<ID=PM,Number=1,Type=Float,Description="Proportion of mut allele">
+##SAMPLE=<ID=NORMAL,Description="Normal",Accession=.,Platform=.,Protocol=WGS,SampleName=normal,Source=.>
+##SAMPLE=<ID=TUMOUR,Description="Tumour",Accession=.,Platform=.,Protocol=WGS,SampleName=tumor,Source=.>
+##FILTER=<ID=DTH,Description="Less than 1/3 mutant alleles were >= 25 base quality">
+##FILTER=<ID=RP,Description="Coverage was less than 8 and no mutant alleles were found in the first 2/3 of a read (shifted 0.08 from the start and extended 0.08 more than 2/3 of the read length)">
+##FILTER=<ID=MN,Description="More than 0.05 of mutant alleles that were >= 15 base quality found in the matched normal">
+##FILTER=<ID=PT,Description="Mutant alleles all on one direction of read (1rd allowed on opposite strand) and in second half of the read. Second half of read contains the motif GGC[AT]G in sequenced orientation and the mean base quality of all bases after the motif was less than 20">
+##FILTER=<ID=MQ,Description="Mean mapping quality of the mutant allele reads was < 21">
+##FILTER=<ID=SR,Description="Position falls within a simple repeat using the supplied bed file">
+##FILTER=<ID=CR,Description="Position falls within a centromeric repeat using the supplied bed file">
+##INFO=<ID=SNP,Number=0,Type=Flag,Description="Position matches a dbSNP entry using the supplied bed file">
+##FILTER=<ID=PH,Description="Mutant reads were on one strand (permitted proportion on other strand: 0.04), and mean mutant base quality was less than 21">
+##FILTER=<ID=HSD,Description="Position falls within a high sequencing depth region using the supplied bed file">
+##FILTER=<ID=GI,Description="Position falls within a germline indel using the supplied bed file">
+##FILTER=<ID=VUM,Description="Position has >= 3 mutant allele present in at least 1 percent unmatched normal samples in the unmatched VCF.">
+##FILTER=<ID=SE,Description="Coverage is >= 10 on each strand but mutant allele is only present on one strand">
+##FILTER=<ID=MNP,Description="Tumour sample mutant allele proportion - normal sample mutant allele proportion < 0.2">
+##INFO=<ID=ASRD,Number=1,Type=Float,Description="A soft flag median (read length adjusted) alignment score of reads showing the variant allele">
+##INFO=<ID=CLPM,Number=1,Type=Float,Description="A soft flag median number of soft clipped bases in variant supporting reads">
+##INFO=<ID=ASMD,Number=1,Type=Float,Description="A soft flag median alignement score of reads showing the variant allele">
+##vcfProcessLog_20191111.1=<InputVCF=<tumor_vs_normal.muts.ids.vcf>,InputVCFSource=<FlagCaVEManVCF.pl>,InputVCFVer=<1.5.2>,InputVCFParam=<c=flag.vcf.config.ini,o=tumor_vs_normal.flagged.muts.vcf,loud=.,h=.,t=GENOME,p=.,g=germline_indel.bed.gz,m=tumor.bam,ref=reference.fasta.fai,s=HUMAN,sp=.,b=flagging,f=tumor_vs_normal.muts.ids.vcf,v=flag.to.vcf.convert.ini,ab=.,umv=caveman,l=2000,idx=.,n=normal.bam>>
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	NORMAL	TUMOUR
+2	395	d53417aa-0499-11ea-84a7-277b2e939dc2	C	T	.	PASS	DP=581;MP=1.0e+00;GP=1.5e-114;TG=CC/TT;TP=1.0e+00;SG=CC/CT;SP=1.3e-52;ASRD=0.92;CLPM=0.00;ASMD=115.00	GT:FAZ:FCZ:FGZ:FTZ:RAZ:RCZ:RGZ:RTZ:PM	0|0:1:360:0:0:0:50:0:0:0.0e+00	1|1:0:0:0:140:0:0:0:30:1.0e+00
+2	477	d5341ca0-0499-11ea-84a7-277b2e939dc2	C	A	.	PASS	DP=1530;MP=1.0e+00;GP=2.8e-296;TG=CC/AA;TP=1.0e+00;SG=CC/AC;SP=7.3e-137;ASRD=0.86;CLPM=0.00;ASMD=107.00	GT:FAZ:FCZ:FGZ:FTZ:RAZ:RCZ:RGZ:RTZ:PM	0|0:1:649:0:0:0:415:1:4:9.3e-04	1|1:287:0:0:1:168:2:0:2:9.9e-01
+2	503	d5341d7c-0499-11ea-84a7-277b2e939dc2	G	T	.	PASS	DP=1665;MP=1.0e+00;GP=5.0e-304;TG=GG/TT;TP=1.0e+00;SG=GG/GT;SP=3.9e-150;ASRD=0.86;CLPM=0.00;ASMD=107.00	GT:FAZ:FCZ:FGZ:FTZ:RAZ:RCZ:RGZ:RTZ:PM	0|0:0:0:616:1:1:0:529:13:1.2e-02	1|1:1:0:0:301:2:0:1:200:9.9e-01
+2	639	d5341e4e-0499-11ea-84a7-277b2e939dc2	T	C	.	PASS	DP=517;MP=1.0e+00;GP=7.5e-98;TG=TT/CC;TP=1.0e+00;SG=TT/CT;SP=1.6e-50;ASRD=0.96;CLPM=0.00;ASMD=120.00	GT:FAZ:FCZ:FGZ:FTZ:RAZ:RCZ:RGZ:RTZ:PM	0|0:0:0:0:6:0:0:1:346:0.0e+00	1|1:0:10:0:0:0:154:0:0:1.0e+00
+2	743	d5341f20-0499-11ea-84a7-277b2e939dc2	C	T	.	PASS	DP=149;MP=1.0e+00;GP=2.5e-26;TG=CC/TT;TP=1.0e+00;SG=CC/CT;SP=4.5e-17;ASRD=0.92;CLPM=0.00;ASMD=115.00	GT:FAZ:FCZ:FGZ:FTZ:RAZ:RCZ:RGZ:RTZ:PM	0|0:0:4:0:0:0:92:0:0:0.0e+00	1|1:0:0:0:0:0:0:0:53:1.0e+00
+2	863	d5341fe8-0499-11ea-84a7-277b2e939dc2	G	A	.	PASS	DP=25;MP=1.0e+00;GP=2.8e-03;TG=GG/AA;TP=1.0e+00;SG=AG/AA;SP=2.8e-03;ASRD=0.92;CLPM=0.00;ASMD=115.00	GT:FAZ:FCZ:FGZ:FTZ:RAZ:RCZ:RGZ:RTZ:PM	0|0:0:0:0:0:0:0:13:0:0.0e+00	1|1:0:0:0:0:12:0:0:0:1.0e+00
