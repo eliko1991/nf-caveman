@@ -1,0 +1,71 @@
+%%metro title: nf-caveman
+%%metro line: caveman | CaVEMan | #0570b0
+%%metro file: flagged_vcf | VCF | Flagged SNVs
+%%metro file: snps_vcf | VCF | SNPs
+%%metro off_track: flagged_vcf, snps_vcf
+
+graph LR
+    subgraph setup [Setup]
+        cv_setup[Setup]
+    end
+
+    subgraph split [Split · one task per contig]
+        split_1[Contig 1]
+        split_2[Contig 2]
+        split_n[Contig N]
+    end
+
+    subgraph prepare [Prepare split list]
+        remove[Remove contigs]
+        concat[Split concat]
+        remove -->|caveman| concat
+    end
+
+    subgraph mstep [M-step · one task per split region]
+        mstep_1[Region 1]
+        mstep_2[Region 2]
+        mstep_n[Region N]
+    end
+
+    subgraph merge [Merge]
+        cv_merge[Merge]
+    end
+
+    subgraph estep [E-step · one task per split region]
+        estep_1[Region 1]
+        estep_2[Region 2]
+        estep_n[Region N]
+    end
+
+    subgraph finalise [Call and flag]
+        results[Merge results]
+        add_ids[Add IDs]
+        flag[Flag]
+        snps_vcf[ ]
+        flagged_vcf[ ]
+        results -->|caveman| add_ids
+        add_ids -->|caveman| flag
+        add_ids -->|caveman| snps_vcf
+        flag -->|caveman| flagged_vcf
+    end
+
+    cv_setup -->|caveman| split_1
+    cv_setup -->|caveman| split_2
+    cv_setup -->|caveman| split_n
+    split_1 -->|caveman| remove
+    split_2 -->|caveman| remove
+    split_n -->|caveman| remove
+
+    concat -->|caveman| mstep_1
+    concat -->|caveman| mstep_2
+    concat -->|caveman| mstep_n
+    mstep_1 -->|caveman| cv_merge
+    mstep_2 -->|caveman| cv_merge
+    mstep_n -->|caveman| cv_merge
+
+    cv_merge -->|caveman| estep_1
+    cv_merge -->|caveman| estep_2
+    cv_merge -->|caveman| estep_n
+    estep_1 -->|caveman| results
+    estep_2 -->|caveman| results
+    estep_n -->|caveman| results
