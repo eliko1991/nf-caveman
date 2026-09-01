@@ -101,15 +101,30 @@ workflow CAVEMAN {
     //
     // STEP 2: Split genome into chunks (parallel by reference contig)
     //
-    CAVEMAN_SPLIT(
-        CAVEMAN_SETUP.out.workdir,
-        ch_common_inputs
-    )
+    // One task per contig, same fan-out as the m/e-steps below. caveman split writes a
+    // per-index splitList.<contig>, progress marker and log, so the tasks share the
+    // workdir without racing, and split_concat globs the pieces back together.
+    ch_split_indices = CAVEMAN_SETUP.out.workdir
+        .combine(ch_common_inputs)
+        .map { workdir, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file ->
+            def count = reference_fai.readLines().findAll { it.trim() }.size()
+            (1..count).collect { idx ->
+                tuple(workdir, idx, tumour_bam, tumour_bai, normal_bam, normal_bai, reference_fai, normal_cn, tumour_cn, ignore_file)
+            }
+        }
+        .flatMap { it }
+
+    CAVEMAN_SPLIT(ch_split_indices)
 
     //
     // STEP 3: Remove unwanted contigs (GL, hs, MT, NC)
     //
-    REMOVE_CONTIGS(CAVEMAN_SPLIT.out.workdir)
+    // Runs once, after every contig has been split.
+    ch_remove_contigs_input = CAVEMAN_SETUP.out.workdir
+        .combine(CAVEMAN_SPLIT.out.done.collect().map { 'done' })
+        .map { workdir, done -> workdir }
+
+    REMOVE_CONTIGS(ch_remove_contigs_input)
 
     //
     // STEP 4: Concatenate split files
