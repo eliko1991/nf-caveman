@@ -12,16 +12,65 @@ The pipeline wraps [cgpCaVEManWrapper](https://github.com/cancerit/cgpCaVEManWra
 
 ## Pipeline Summary
 
+Three steps fan out — **Split** to one task per reference contig, **M-step** and **E-step**
+to one task per split region. Everything else is a single task.
+
+```mermaid
+flowchart TD
+    SETUP(["1 · Setup"])
+
+    SETUP --> SP1 & SP2 & SPN
+
+    SP1["2 · Split<br/>contig 1"]
+    SP2["contig 2"]
+    SPN["contig N"]
+
+    SP1 & SP2 & SPN --> RC(["3 · Remove Contigs"])
+    RC --> SC(["4 · Split Concat"])
+
+    SC --> M1 & M2 & MN
+
+    M1["5 · M-step<br/>region 1"]
+    M2["region 2"]
+    MN["region N"]
+
+    M1 & M2 & MN --> MG(["6 · Merge"])
+
+    MG --> E1 & E2 & EN
+
+    E1["7 · E-step<br/>region 1"]
+    E2["region 2"]
+    EN["region N"]
+
+    E1 & E2 & EN --> MR(["8 · Merge Results"])
+    MR --> AI(["9 · Add IDs"])
+    AI --> FL(["10 · Flag"])
+    FL --> OUT[/"flagged.muts.vcf.gz<br/>snps.ids.vcf.gz"/]
+
+    classDef fan fill:#e8f0fe,stroke:#4285f4,stroke-width:1px;
+    classDef step fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px;
+    classDef out fill:#e6f4ea,stroke:#34a853,stroke-width:1px;
+    class SP1,SP2,SPN,M1,M2,MN,E1,E2,EN fan;
+    class SETUP,RC,SC,MG,MR,AI,FL step;
+    class OUT out;
+```
+
 1. **Setup** - Initialize CaVEMan working directory
-2. **Split** - Split genome into chunks by reference contig
+2. **Split** - Split genome into chunks, **one task per reference contig**
 3. **Remove Contigs** - Remove unwanted contigs (GL, hs, MT, NC)
 4. **Split Concat** - Concatenate split files
-5. **M-step** - Mutation step (runs in parallel per chunk)
+5. **M-step** - Mutation step, **one task per split region**
 6. **Merge** - Merge M-step results
-7. **E-step** - Error evaluation step (runs in parallel per chunk)
+7. **E-step** - Error evaluation step, **one task per split region**
 8. **Merge Results** - Merge E-step results
 9. **Add IDs** - Add variant IDs and index VCFs
 10. **Flag** - Variant flagging and annotation (optional)
+
+The fanned-out steps share the working directory created by **Setup**: each task resolves the
+staged symlink back to it and writes a per-index output, progress marker and log. They are
+idempotent, so a retried task that already succeeded exits immediately. On a grid executor,
+set the `array` process directive to batch the tasks into job arrays rather than submitting
+each one separately.
 
 ## Quick Start
 
