@@ -15,9 +15,7 @@ process CAVEMAN_FLAG {
     path("*.flagged.muts.vcf.gz.tbi"), emit: vcf_tbi
 
     script:
-    // --tgd selects the TARGETED section of the flagging config, which drops the
-    // unmatchedNormalVcf, singleEnd and matchedNormalProportion flags.
-    def study_type = params.tgd ? 'targeted' : (params.seqType == 'pulldown' ? 'pulldown' : 'genomic')
+    def study_type = params.seqType == 'pulldown' ? 'pulldown' : 'genomic'
     def flag_config_arg = (flag_config && !flag_config.name.startsWith('NO_FILE')) ? "-c ${flag_config}" : ""
     def flag_to_vcf_arg = (flag_to_vcf_config && !flag_to_vcf_config.name.startsWith('NO_FILE')) ? "-v ${flag_to_vcf_config}" : ""
     def annot_arg = (annot_bed_files && !annot_bed_files.name.startsWith('NO_FILE')) ? "-ab ${annot_bed_files}" : ""
