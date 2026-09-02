@@ -1,8 +1,6 @@
 process CAVEMAN_ADD_IDS {
     tag "add_ids"
     label 'process_low'
-    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
-
     publishDir "${params.outdir}", mode: params.publish_dir_mode, pattern: "*.snps.ids.vcf.gz*"
 
     input:
@@ -23,6 +21,8 @@ process CAVEMAN_ADD_IDS {
     def seqtype_arg       = params.seqType         ? "-seqType ${params.seqType}"                 : ""
     def normal_prot       = params.normal_protocol ? "-normal-protocol ${params.normal_protocol}" : ""
     def tumour_prot       = params.tumour_protocol ? "-tumour-protocol ${params.tumour_protocol}" : ""
+    def norm_plat         = params.normal_platform ? "-normal-platform ${params.normal_platform}" : ""
+    def tum_plat          = params.tumour_platform ? "-tumour-platform ${params.tumour_platform}" : ""
     def contam_arg        = params.normal_contamination ? "-normal-contamination ${params.normal_contamination}" : ""
     """
     # Save original directory for output files
@@ -73,6 +73,8 @@ process CAVEMAN_ADD_IDS {
         ${seqtype_arg} \\
         ${normal_prot} \\
         ${tumour_prot} \\
+        ${norm_plat} \\
+        ${tum_plat} \\
         ${contam_arg}
 
     # Compress and index VCFs

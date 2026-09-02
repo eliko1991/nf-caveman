@@ -1,8 +1,6 @@
 process CAVEMAN_MSTEP {
     tag "mstep_${index}"
     label 'process_single'
-    container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
-
     input:
     tuple path(workdir), val(index), path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fai), path(normal_cn), path(tumour_cn), path(ignore_file)
 
@@ -17,6 +15,8 @@ process CAVEMAN_MSTEP {
     def seqtype_arg       = params.seqType         ? "-seqType ${params.seqType}"                 : ""
     def normal_prot       = params.normal_protocol ? "-normal-protocol ${params.normal_protocol}" : ""
     def tumour_prot       = params.tumour_protocol ? "-tumour-protocol ${params.tumour_protocol}" : ""
+    def norm_plat         = params.normal_platform ? "-normal-platform ${params.normal_platform}" : ""
+    def tum_plat          = params.tumour_platform ? "-tumour-platform ${params.tumour_platform}" : ""
     def contam_arg        = params.normal_contamination ? "-normal-contamination ${params.normal_contamination}" : ""
     """
     # Get absolute paths before changing directory
@@ -63,6 +63,8 @@ process CAVEMAN_MSTEP {
         ${seqtype_arg} \\
         ${normal_prot} \\
         ${tumour_prot} \\
+        ${norm_plat} \\
+        ${tum_plat} \\
         ${contam_arg}
     """
 }
