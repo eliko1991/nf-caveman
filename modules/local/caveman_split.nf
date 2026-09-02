@@ -1,15 +1,13 @@
 process CAVEMAN_SPLIT {
-    tag "split"
-    label 'process_low'
+    tag "split_${index}"
+    label 'process_single'
     container workflow.containerEngine == 'singularity' ? '/isabl/local/nf-caveman//papaemmelab_docker_cgp_v1_1.sif' : 'papaemmelab/docker-cgp:v1.1'
-    label 'process_long'
 
     input:
-    path(workdir)
-    tuple path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fai), path(normal_cn), path(tumour_cn), path(ignore_file)
+    tuple path(workdir), val(index), path(tumour_bam), path(tumour_bai), path(normal_bam), path(normal_bai), path(reference_fai), path(normal_cn), path(tumour_cn), path(ignore_file)
 
     output:
-    path(workdir), emit: workdir
+    tuple path(workdir), val(index), emit: done
 
     script:
     def norm_cn_def       = params.norm_cn_default ? "-norm-cn-default ${params.norm_cn_default}" : ""
@@ -42,34 +40,30 @@ process CAVEMAN_SPLIT {
         IGNORE_ARG="-ignore-file \$(readlink -f ${ignore_file})"
     fi
 
-    NUM_CONTIGS=\$(wc -l < ${reference_fai} | tr -d ' ')
-
     # CaVEMan requires running from the same directory where setup was performed
     # Resolve symlink to get the actual setup directory (parent of workdir)
     SETUP_DIR=\$(dirname \$(readlink -f ${workdir}))
     cd \$SETUP_DIR
 
-    for i in \$(seq 1 \$NUM_CONTIGS); do
-        caveman.pl \\
-            -process split \\
-            -index \$i \\
-            -threads ${task.cpus} \\
-            -logs workdir/clogs \\
-            -outdir workdir \\
-            -tumour-bam \$TUMOUR_BAM_ABS \\
-            -normal-bam \$NORMAL_BAM_ABS \\
-            -reference \$REF_FAI_ABS \\
-            \$NORMAL_CN_ARG \\
-            \$TUMOUR_CN_ARG \\
-            \$IGNORE_ARG \\
-            ${norm_cn_def} \\
-            ${tum_cn_def} \\
-            ${species_arg} \\
-            ${assembly_arg} \\
-            ${seqtype_arg} \\
-            ${normal_prot} \\
-            ${tumour_prot} \\
-            ${contam_arg}
-    done
+    caveman.pl \\
+        -process split \\
+        -index ${index} \\
+        -threads ${task.cpus} \\
+        -logs workdir/clogs \\
+        -outdir workdir \\
+        -tumour-bam \$TUMOUR_BAM_ABS \\
+        -normal-bam \$NORMAL_BAM_ABS \\
+        -reference \$REF_FAI_ABS \\
+        \$NORMAL_CN_ARG \\
+        \$TUMOUR_CN_ARG \\
+        \$IGNORE_ARG \\
+        ${norm_cn_def} \\
+        ${tum_cn_def} \\
+        ${species_arg} \\
+        ${assembly_arg} \\
+        ${seqtype_arg} \\
+        ${normal_prot} \\
+        ${tumour_prot} \\
+        ${contam_arg}
     """
 }
